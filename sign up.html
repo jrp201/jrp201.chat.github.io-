@@ -33,7 +33,7 @@
       top: 50%;
     }
     form {
-      height: 580px;
+      height: 620px;
       width: 400px;
       background-color: rgba(255, 255, 255, 0.13);
       position: absolute;
@@ -81,7 +81,7 @@
       color: #e5e5e5;
     }
     button {
-      margin-top: 40px;
+      margin-top: 30px;
       width: 100%;
       background-color: #ffffff;
       color: #080710;
@@ -100,12 +100,18 @@
       color: #ffffff;
       text-decoration: underline;
     }
+    .g-recaptcha {
+      margin-top: 25px;
+    }
   </style>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <!-- Google reCAPTCHA -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <script>
     const firebaseConfig = {
@@ -127,13 +133,18 @@
 
       const email = document.getElementById("Email").value;
       const password = document.getElementById("Password").value;
+      const recaptchaResponse = grecaptcha.getResponse();
+
+      if (!recaptchaResponse) {
+        alert("Please verify that you're not a robot.");
+        return;
+      }
 
       auth
         .createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
 
-          // Add user email to Firestore under "users" collection
           return db.collection("users").doc(user.uid).set({
             email: user.email,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -172,6 +183,9 @@
         id="Password"
         required
       />
+
+      <!-- reCAPTCHA Widget -->
+      <div class="g-recaptcha" data-sitekey="6Lc6zUgrAAAAAHnpubUS5cPIBXmP9wHayVyessZl"></div>
 
       <button type="submit">Create Account</button>
 
