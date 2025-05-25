@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign Up</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    *,
+    *:before,
+    *:after {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #080710;
+    }
+
+    .background {
+      width: 430px;
+      height: 520px;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      left: 50%;
+      top: 50%;
+    }
+    form {
+      height: 580px;
+      width: 400px;
+      background-color: rgba(255, 255, 255, 0.13);
+      position: absolute;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+      padding: 50px 35px;
+    }
+    form * {
+      font-family: "Poppins", sans-serif;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      outline: none;
+      border: none;
+    }
+    form h3 {
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 42px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 30px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    input {
+      display: block;
+      height: 50px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.07);
+      border-radius: 3px;
+      padding: 0 10px;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 300;
+    }
+    ::placeholder {
+      color: #e5e5e5;
+    }
+    button {
+      margin-top: 40px;
+      width: 100%;
+      background-color: #ffffff;
+      color: #080710;
+      padding: 15px 0;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .link {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .link a {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAGZwExAE5rfp2_s1zIUdQhmz0ue9-7hk0",
+      authDomain: "chat-73434.firebaseapp.com",
+      projectId: "chat-73434",
+      storageBucket: "chat-73434.firebasestorage.app",
+      messagingSenderId: "732737297201",
+      appId: "1:732737297201:web:6a661d882ee060fa7c6e10",
+      measurementId: "G-0ET5S8YDG0",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function signup(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("Email").value;
+      const password = document.getElementById("Password").value;
+
+      auth
+        .createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          // Add user email to Firestore under "users" collection
+          return db.collection("users").doc(user.uid).set({
+            email: user.email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        })
+        .then(() => {
+          alert("Account created and email stored successfully!");
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
+    }
+  </script>
+
+</head>
+
+<body>
+  <div class="card">
+    <form onsubmit="signup(event)">
+      <h3>Sign Up</h3>
+
+      <label for="Email">Email</label>
+      <input
+        type="text"
+        class="card"
+        placeholder="Email"
+        id="Email"
+        required
+      />
+
+      <label for="Password">Password</label>
+      <input
+        type="password"
+        placeholder="Password"
+        id="Password"
+        required
+      />
+
+      <button type="submit">Create Account</button>
+
+      <p class="link">
+        Already have an account?
+        <a href="sign in.html">Sign in</a>
+      </p>
+    </form>
+  </div>
+</body>
+</html>
