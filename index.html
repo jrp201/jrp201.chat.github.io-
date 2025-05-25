@@ -7,205 +7,62 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=send" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    body {
-      background: #fff;
-      margin: 0;
-      padding-bottom: 80px;
-      font-family: sans-serif;
-    }
-    .topnav {
-      position: fixed;
-      top:  0;
-      left: 0;
-      right:0;
-      height: 50px;
-      background: #42a5f5;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      font-weight: 600;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      z-index: 1001;
-    }
-    .topnav .user-info {
-      font-size: 16px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow:ellipsis;
-      max-width: 200px;
-    }
-    .topnav button {
-      background: #1e88e5;
-      border: none;
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    body { background: #fff; margin: 0; padding-bottom: 80px; font-family: sans-serif; }
+    .topnav { position: fixed; top:0; left:0; right:0; height:50px; background:#42a5f5; color:#fff;
+      display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-weight:600;
+      box-shadow:0 2px 5px rgba(0,0,0,0.2); z-index:1001; }
+    .topnav .user-info { font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
+    .topnav button { background:#1e88e5; border:none; color:#fff; padding:6px 12px; border-radius:5px; cursor:pointer; }
+    .topnav .menu-toggle { display:none; cursor:pointer; }
     /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 50px;
-      bottom: 0;
-      left: 0;
-      width: 220px;
-      background: #1c1c1c;
-      color: #fff;
-      padding: 20px 10px;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-      overflow-y: auto;
-      transition: transform .3s ease;
-    }
-    .sidebar.open {
-      transform: translateX(0);
-    }
-    .sidebar h4 {
-      margin: 0 0 10px;
-      font-size: 18px;
-    }
-    .sidebar-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 10px;
-    }
-    .sidebar-list li {
-      padding: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 5px;
-      transition: background 0.2s;
-    }
-    .sidebar-list li:hover {
-      background: #333;
-    }
-    .chat-container {
-      margin-left: 240px;
-      margin-top: 70px;
-      padding: 0 20px;
-    }
-    .chat-header {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #333;
-    }
-    .chat {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      overflow-y: auto;
-      height: calc(100vh - 200px);
-    }
-    .msg {
-      position: relative;
-      max-width: 75%;
-      padding: 7px 15px;
-      margin-bottom: 5px;
-      word-wrap: break-word;
-    }
-    .msg.sent {
-      margin-left: auto;
-      background: #42a5f5;
-      color: #fff;
-      border-radius: 20px 3px 3px 20px;
-    }
-    .msg.rcvd {
-      margin-right: auto;
-      background: #f1f1f1;
-      color: #555;
-      border-radius: 3px 20px 20px 3px;
-    }
-    .msg::before {
-      content: attr(data-time);
-      font-size: .8rem;
-      position: absolute;
-      bottom: 100%;
-      color: #888;
-      white-space: nowrap;
-      display: none;
-    }
-    .msg.sent::before {
-      right:15px;
-    }
-    .msg.rcvd::before {
-      left:15px;
-    }
-    .msg:first-child::before,
-    .msg.sent+.msg.rcvd::before,
-    .msg.rcvd+.msg.sent::before {
-      display: block;
-    }
+    .sidebar { position:fixed; top:50px; bottom:0; left:0; width:200px; background:#1c1c1c; color:#fff;
+      padding:20px 10px; box-shadow:2px 0 5px rgba(0,0,0,0.2); overflow-y:auto; transition:transform .3s ease; }
+    .sidebar.open { transform:translateX(0); }
+    .sidebar h4 { margin:0 0 10px; font-size:18px; }
+    .sidebar-list { list-style:none; padding:0; margin:0 0 10px; }
+    .sidebar-list li { padding:10px; border-radius:5px; cursor:pointer; margin-bottom:5px; }
+    .sidebar-list li:hover { background:#333; }
+    .chat-container { margin-left:220px; margin-top:70px; padding:0 20px; }
+    .chat-header { font-size:18px; margin-bottom:10px; color:#333; }
+    .chat { display:flex; flex-direction:column; padding:20px; overflow-y:auto; height:calc(100vh - 200px); }
+    .msg { position:relative; max-width:75%; padding:7px 15px; margin-bottom:2px; word-wrap:break-word; }
+    .msg.sent { margin-left:auto; background:#42a5f5; color:#fff; border-radius:20px 3px 3px 20px; }
+    .msg.rcvd { margin-right:auto; background:#f1f1f1; color:#555; border-radius:3px 20px 20px 3px; }
+    .msg::before { content:attr(data-time); font-size:.8rem; position:absolute; bottom:100%; color:#888; white-space:nowrap; display:none; }
+    .msg.sent::before { right:15px; }
+    .msg.rcvd::before { left:15px; }
+    .msg:first-child::before, .msg.sent+.msg.rcvd::before, .msg.rcvd+.msg.sent::before { display:block; }
     /* Send bar */
-    #sendBar {
-      position: fixed;
-      bottom: 10px;
-      left:50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-      background: rgba(0,0,0,0.8);
-      padding: 10px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
+    #sendBar { position:fixed; bottom:10px; left:calc(50% + 100px); transform:translateX(-50%);
+      display:flex; gap:10px; background:rgba(0,0,0,.8); padding:10px; border-radius:10px; width:460px; }
+    #textbox { flex:1; height:40px; border:none; border-radius:20px; padding:0 15px; font-size:16px; color:#fff; background:#222; }
+    #textbox:focus { outline:none; background:#333; }
+    #sendBtn { width:45px; height:45px; border:none; border-radius:50%; background:#42a5f5; display:flex;
+      align-items:center; justify-content:center; cursor:pointer; font-size:24px; color:#fff; }
+    #sendBtn:hover { background:#1e88e5; }
+    /* Responsive */
+    @media(max-width:768px) {
+      .sidebar { transform:translateX(-100%); }
+      .chat-container{margin-left:0;}
+      .topnav .menu-toggle{display:inline-block;}
+      #sendBar{ width:90%; left:50%; transform:translateX(-50%); }
     }
-    #textbox {
-      flex: 1;
-      height: 45px;
-      border: none;
-      border-radius: 20px;
-      padding: 0 15px;
-      font-size: 16px;
-      color: #fff;
-      background: #222;
-    }
-    #textbox:focus {
-      outline: none;
-      background: #333;
-    }
-    #sendBtn {
-      width: 45px;
-      height: 45px;
-      border: none;
-      border-radius: 50%;
-      background: #42a5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 24px;
-      color: #fff;
-    }
-    #sendBtn:hover {
-      background: #1e88e5;
-    }
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .chat-container {
-        margin-left: 0;
-        padding: 0 10px;
-      }
-      #sendBar {
-        width: calc(100% - 20px);
-      }
-    }
+    @media(min-width:769px) { .topnav .menu-toggle{display:none;} }
   </style>
 </head>
 <body>
   <div class="topnav">
-    <div class="d-flex align-items-center gap-2">
-      <span class="material-symbols-outlined menu-toggle d-block d-md-none" onclick="toggleSidebar()">menu</span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="material-symbols-outlined menu-toggle" onclick="toggleSidebar()">menu</span>
       <div class="user-info" id="user-info">Loading user…</div>
     </div>
-    <button id="signoutBtn" class="btn btn-sm">Sign Out</button>
+    <button id="signoutBtn">Sign Out</button>
   </div>
   <div class="sidebar" id="sidebar">
-    <h4>Chats</h4>
-    <button id="add" title="Add chat" class="btn btn-primary rounded-circle mb-3">+</button>
+    <h4>chats</h4>
+    <button id="add" title="Add chat" style="height:50px;width:50px;border-radius:100%;background-color:#007AFF;border:transparent;">
+      <h1 style="color:white;line-height:1;margin:0;">+</h1>
+    </button>
     <ul id="chatsList" class="sidebar-list"></ul>
   </div>
   <div class="chat-container">
@@ -221,25 +78,72 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script>
-    // Firebase init and logic unchanged
-    const firebaseConfig = { /* ... */ };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAGZwExAE5rfp2_s1zIUdQhmz0ue9-7hk0",
+      authDomain: "chat-73434.firebaseapp.com",
+      projectId: "chat-73434",
+      storageBucket: "chat-73434.appspot.com",
+      messagingSenderId: "732737297201",
+      appId: "1:732737297201:web:6a661d882ee060fa7c6e10",
+      measurementId: "G-0ET5S8YDG0"
+    };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     let currentChatId = null, unsubscribe = null;
-
     auth.onAuthStateChanged(user => {
       if (!user) return location.href='sign in.html';
       document.getElementById('user-info').textContent = user.email;
       loadchats();
     });
     document.getElementById('signoutBtn').onclick = () => auth.signOut();
-
-    async function loadchats() { /* ... */ }
-    function selectChat(chatId, name){ /* ... */ }
-    function send(){ /* ... */ }
-    document.getElementById('add').onclick = async()=>{ /* ... */ };
-    function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+    async function loadchats() {
+      db.collection('chats').where('members','array-contains',auth.currentUser.uid)
+        .onSnapshot(async snap=>{
+          const list=document.getElementById('chatsList'); list.innerHTML='';
+          for(const d of snap.docs){
+            const chat=d.data(), other=chat.members.find(u=>u!==auth.currentUser.uid);
+            if(!other) continue;
+            const udoc=await db.collection('users').doc(other).get();
+            const name=udoc.exists?udoc.data().email:'Unknown';
+            const li=document.createElement('li'); li.textContent=name;
+            li.onclick=()=>selectChat(d.id,name);
+            list.appendChild(li);
+          }
+        });
+    }
+    function selectChat(chatId, name){
+      if(unsubscribe) unsubscribe(); currentChatId=chatId;
+      document.getElementById('chatHeader').textContent=name;
+      const msgs=document.getElementById('messages'); msgs.innerHTML='';
+      const ref=db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp');
+      unsubscribe=ref.onSnapshot(snap=>{
+        msgs.innerHTML=''; snap.forEach(doc=>{
+          const d=doc.data(), div=document.createElement('div');
+          div.className=d.uid===auth.currentUser.uid?'msg sent':'msg rcvd';
+          div.textContent=d.text;
+          const t=d.timestamp.toDate();
+          div.setAttribute('data-time',`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`);
+          msgs.appendChild(div);
+        }); msgs.scrollTop=msgs.scrollHeight;
+      });
+    }
+    function send(){
+      const txt=document.getElementById('textbox');
+      if(!currentChatId||!txt.value.trim()) return;
+      db.collection('chats').doc(currentChatId)
+        .collection('messages').add({text:txt.value.trim(),uid:auth.currentUser.uid,timestamp:firebase.firestore.FieldValue.serverTimestamp()});
+      txt.value='';
+    }
+    document.getElementById('add').onclick=async()=>{
+      const email=prompt('chat email:'); if(!email) return;
+      const us=await db.collection('users').where('email','==',email.trim()).get(); if(us.empty) return alert('No user');
+      const fid=us.docs[0].id;
+      const chats=await db.collection('chats').where('members','array-contains',auth.currentUser.uid).get();
+      if(chats.docs.some(d=>d.data().members.includes(fid))) return alert('Already chat');
+      await db.collection('chats').add({members:[auth.currentUser.uid,fid],timestamp:firebase.firestore.FieldValue.serverTimestamp()});
+    };
+    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
   </script>
 </body>
 </html>
