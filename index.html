@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Chat</title>
 
-  <!-- ✅ Correct Material Symbols import -->
+  <!-- ✅ Material Symbols -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
   <!-- ✅ Bootstrap -->
@@ -19,19 +19,19 @@
       font-family: sans-serif;
     }
 
-    /* ✅ Required Material Symbol styles */
+    /* ✅ Material Symbols styling fix */
     .material-symbols-outlined {
       font-family: 'Material Symbols Outlined';
-      font-weight: normal;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
       font-style: normal;
+      font-weight: normal;
       font-size: 24px;
       display: inline-block;
       line-height: 1;
-      text-transform: none;
       letter-spacing: normal;
+      text-transform: none;
       white-space: nowrap;
       direction: ltr;
-      -webkit-font-feature-settings: 'liga';
       -webkit-font-smoothing: antialiased;
     }
 
@@ -48,16 +48,15 @@
       justify-content: space-between;
       padding: 0 20px;
       font-weight: 600;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       z-index: 1001;
     }
 
     .topnav .user-info {
       font-size: 16px;
+      max-width: 200px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 200px;
     }
 
     .topnav button {
@@ -78,7 +77,6 @@
       background: #1c1c1c;
       color: #fff;
       padding: 20px 10px;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
       overflow-y: auto;
       transform: translateX(0);
       transition: transform 0.3s ease;
@@ -93,7 +91,7 @@
     .sidebar-list {
       list-style: none;
       padding: 0;
-      margin: 0 0 10px;
+      margin: 0;
     }
 
     .sidebar-list li {
@@ -225,7 +223,7 @@
     .material-symbols-outlined.menu-toggle {
       cursor: pointer;
       font-size: 26px;
-      display: none;
+      margin-right: 10px;
     }
 
     @media (max-width: 768px) {
@@ -246,13 +244,7 @@
       }
 
       #sendBar {
-        left: 50%;
-        transform: translateX(-50%);
         width: 95%;
-      }
-
-      .chat {
-        height: calc(100vh - 170px);
       }
     }
   </style>
@@ -261,7 +253,7 @@
 
   <!-- ✅ Top Navigation -->
   <div class="topnav">
-    <div style="display:flex;align-items:center;gap:10px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
       <span class="material-symbols-outlined menu-toggle" onclick="toggleSidebar()">menu</span>
       <div class="user-info" id="user-info">Loading user…</div>
     </div>
@@ -270,20 +262,20 @@
 
   <!-- ✅ Sidebar -->
   <div class="sidebar" id="sidebar">
-    <h4>chats</h4>
-    <button id="add" title="Add chat" style="height:50px;width:50px;border-radius:100%;background-color:#007AFF;border:transparent;">
-      <h1 style="color:white;line-height:1;margin:0;">+</h1>
+    <h4>Chats</h4>
+    <button id="add" title="Add chat" style="height: 50px; width: 50px; border-radius: 100%; background-color: #007AFF; border: none;">
+      <h1 style="color: white; margin: 0;">+</h1>
     </button>
     <ul id="chatsList" class="sidebar-list"></ul>
   </div>
 
-  <!-- ✅ Chat Container -->
+  <!-- ✅ Chat Section -->
   <div class="chat-container">
     <div id="chatHeader" class="chat-header">Select a chat</div>
     <div id="messages" class="chat"></div>
   </div>
 
-  <!-- ✅ Send Bar -->
+  <!-- ✅ Message Send Bar -->
   <div id="sendBar">
     <input id="textbox" placeholder="Type a message…" onkeydown="if(event.key==='Enter') send()" />
     <button id="sendBtn" onclick="send()">
@@ -291,12 +283,12 @@
     </button>
   </div>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- ✅ Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <!-- ✅ App Logic -->
+  <!-- ✅ JS Logic -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAGZwExAE5rfp2_s1zIUdQhmz0ue9-7hk0",
@@ -313,7 +305,7 @@
     let currentChatId = null, unsubscribe = null;
 
     auth.onAuthStateChanged(user => {
-      if (!user) return location.href='sign in.html';
+      if (!user) return location.href = 'sign in.html';
       document.getElementById('user-info').textContent = user.email;
       loadchats();
     });
@@ -321,56 +313,75 @@
     document.getElementById('signoutBtn').onclick = () => auth.signOut();
 
     async function loadchats() {
-      db.collection('chats').where('members','array-contains',auth.currentUser.uid)
-        .onSnapshot(async snap=>{
-          const list=document.getElementById('chatsList'); list.innerHTML='';
-          for(const d of snap.docs){
-            const chat=d.data(), other=chat.members.find(u=>u!==auth.currentUser.uid);
-            if(!other) continue;
-            const udoc=await db.collection('users').doc(other).get();
-            const name=udoc.exists?udoc.data().email:'Unknown';
-            const li=document.createElement('li'); li.textContent=name;
-            li.onclick=()=>selectChat(d.id,name);
+      db.collection('chats').where('members', 'array-contains', auth.currentUser.uid)
+        .onSnapshot(async snap => {
+          const list = document.getElementById('chatsList');
+          list.innerHTML = '';
+          for (const d of snap.docs) {
+            const chat = d.data();
+            const other = chat.members.find(u => u !== auth.currentUser.uid);
+            if (!other) continue;
+            const udoc = await db.collection('users').doc(other).get();
+            const name = udoc.exists ? udoc.data().email : 'Unknown';
+            const li = document.createElement('li');
+            li.textContent = name;
+            li.onclick = () => selectChat(d.id, name);
             list.appendChild(li);
           }
         });
     }
 
-    function selectChat(chatId, name){
-      if(unsubscribe) unsubscribe(); currentChatId=chatId;
-      document.getElementById('chatHeader').textContent=name;
-      const msgs=document.getElementById('messages'); msgs.innerHTML='';
-      const ref=db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp');
-      unsubscribe=ref.onSnapshot(snap=>{
-        msgs.innerHTML=''; snap.forEach(doc=>{
-          const d=doc.data(), div=document.createElement('div');
-          div.className=d.uid===auth.currentUser.uid?'msg sent':'msg rcvd';
-          div.textContent=d.text;
-          const t=d.timestamp.toDate();
-          div.setAttribute('data-time',`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`);
+    function selectChat(chatId, name) {
+      if (unsubscribe) unsubscribe();
+      currentChatId = chatId;
+      document.getElementById('chatHeader').textContent = name;
+      const msgs = document.getElementById('messages');
+      msgs.innerHTML = '';
+      const ref = db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp');
+      unsubscribe = ref.onSnapshot(snap => {
+        msgs.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const div = document.createElement('div');
+          div.className = d.uid === auth.currentUser.uid ? 'msg sent' : 'msg rcvd';
+          div.textContent = d.text;
+          const t = d.timestamp?.toDate?.();
+          if (t) {
+            div.setAttribute('data-time', `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`);
+          }
           msgs.appendChild(div);
-        }); msgs.scrollTop=msgs.scrollHeight;
+        });
+        msgs.scrollTop = msgs.scrollHeight;
       });
     }
 
-    function send(){
-      const txt=document.getElementById('textbox');
-      if(!currentChatId||!txt.value.trim()) return;
+    function send() {
+      const txt = document.getElementById('textbox');
+      if (!currentChatId || !txt.value.trim()) return;
       db.collection('chats').doc(currentChatId)
-        .collection('messages').add({text:txt.value.trim(),uid:auth.currentUser.uid,timestamp:firebase.firestore.FieldValue.serverTimestamp()});
-      txt.value='';
+        .collection('messages').add({
+          text: txt.value.trim(),
+          uid: auth.currentUser.uid,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      txt.value = '';
     }
 
-    document.getElementById('add').onclick=async()=>{
-      const email=prompt('chat email:'); if(!email) return;
-      const us=await db.collection('users').where('email','==',email.trim()).get(); if(us.empty) return alert('No user');
-      const fid=us.docs[0].id;
-      const chats=await db.collection('chats').where('members','array-contains',auth.currentUser.uid).get();
-      if(chats.docs.some(d=>d.data().members.includes(fid))) return alert('Already chat');
-      await db.collection('chats').add({members:[auth.currentUser.uid,fid],timestamp:firebase.firestore.FieldValue.serverTimestamp()});
+    document.getElementById('add').onclick = async () => {
+      const email = prompt('Chat email:');
+      if (!email) return;
+      const us = await db.collection('users').where('email', '==', email.trim()).get();
+      if (us.empty) return alert('No user');
+      const fid = us.docs[0].id;
+      const chats = await db.collection('chats').where('members', 'array-contains', auth.currentUser.uid).get();
+      if (chats.docs.some(d => d.data().members.includes(fid))) return alert('Already in chat');
+      await db.collection('chats').add({
+        members: [auth.currentUser.uid, fid],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
     };
 
-    function toggleSidebar(){
+    function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
     }
   </script>
