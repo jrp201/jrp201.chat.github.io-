@@ -13,7 +13,6 @@
       padding-bottom: 80px;
       font-family: sans-serif;
     }
-
     .topnav {
       position: fixed;
       top: 0;
@@ -30,7 +29,6 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       z-index: 1001;
     }
-
     .topnav .user-info {
       font-size: 16px;
       white-space: nowrap;
@@ -38,7 +36,6 @@
       text-overflow: ellipsis;
       max-width: 200px;
     }
-
     .topnav button {
       background: #1e88e5;
       border: none;
@@ -47,7 +44,6 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .sidebar {
       position: fixed;
       top: 50px;
@@ -63,41 +59,37 @@
       transition: transform 0.3s ease;
       z-index: 1000;
     }
-
     .sidebar h4 {
       margin: 0 0 10px;
       font-size: 18px;
     }
-
     .sidebar-list {
       list-style: none;
       padding: 0;
       margin: 0 0 10px;
     }
-
     .sidebar-list li {
       padding: 10px;
       border-radius: 5px;
       cursor: pointer;
       margin-bottom: 5px;
     }
-
     .sidebar-list li:hover {
       background: #333;
     }
-
     .chat-container {
       margin-left: 220px;
       margin-top: 70px;
       padding: 0 20px;
     }
-
     .chat-header {
       font-size: 18px;
       margin-bottom: 10px;
       color: #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-
     .chat {
       display: flex;
       flex-direction: column;
@@ -105,7 +97,6 @@
       overflow-y: auto;
       height: calc(100vh - 180px);
     }
-
     .msg {
       position: relative;
       max-width: 75%;
@@ -113,21 +104,18 @@
       margin-bottom: 2px;
       word-wrap: break-word;
     }
-
     .msg.sent {
       margin-left: auto;
       background: #42a5f5;
       color: #fff;
       border-radius: 20px 3px 3px 20px;
     }
-
     .msg.rcvd {
       margin-right: auto;
       background: #f1f1f1;
       color: #555;
       border-radius: 3px 20px 20px 3px;
     }
-
     .msg::before {
       content: attr(data-time);
       font-size: 0.8rem;
@@ -137,21 +125,17 @@
       white-space: nowrap;
       display: none;
     }
-
     .msg.sent::before {
       right: 15px;
     }
-
     .msg.rcvd::before {
       left: 15px;
     }
-
     .msg:first-child::before,
     .msg.sent + .msg.rcvd::before,
     .msg.rcvd + .msg.sent::before {
       display: block;
     }
-
     #sendBar {
       position: fixed;
       bottom: 10px;
@@ -166,7 +150,6 @@
       max-width: 90%;
       z-index: 1002;
     }
-
     #textbox {
       flex: 1;
       height: 40px;
@@ -177,12 +160,10 @@
       color: #fff;
       background: #222;
     }
-
     #textbox:focus {
       outline: none;
       background: #333;
     }
-
     #sendBtn {
       width: 45px;
       height: 45px;
@@ -196,54 +177,32 @@
       font-size: 24px;
       color: #fff;
     }
-
     #sendBtn:hover {
       background: #1e88e5;
     }
-
     .material-symbols-outlined.menu-toggle {
       cursor: pointer;
       font-size: 26px;
       display: none;
     }
-
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
       }
-
       .sidebar.open {
         transform: translateX(0);
       }
-
-      .material-symbols-outlined.menu-toggle {
-        display: inline-block;
-      }
-
       .chat-container {
         margin-left: 0;
       }
-
+      .material-symbols-outlined.menu-toggle {
+        display: inline-block;
+      }
       #sendBar {
         width: 95%;
       }
-
       .chat {
         height: calc(100vh - 170px);
-      }
-    }
-
-    @media (min-width: 769px) {
-      .sidebar {
-        transform: translateX(0) !important;
-      }
-
-      .material-symbols-outlined.menu-toggle {
-        display: none;
-      }
-
-      .chat-container {
-        margin-left: 220px;
       }
     }
   </style>
@@ -256,21 +215,28 @@
     </div>
     <button id="signoutBtn">Sign Out</button>
   </div>
+
   <div class="sidebar" id="sidebar">
     <h4>chats</h4>
-    <button id="add" style="height:50px;width:50px;border-radius:100%;background-color:#007AFF;border:transparent;">
+    <button id="add" title="Add chat" style="height:50px;width:50px;border-radius:100%;background-color:#007AFF;border:transparent;">
       <h1 style="color:white;line-height:1;margin:0;">+</h1>
     </button>
     <ul id="chatsList" class="sidebar-list"></ul>
   </div>
+
   <div class="chat-container">
-    <div id="chatHeader" class="chat-header">Select a chat</div>
+    <div id="chatHeader" class="chat-header">
+      <span id="chatName">Select a chat</span>
+      <button id="deleteChatBtn" style="display:none; background:#e53935; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Delete</button>
+    </div>
     <div id="messages" class="chat"></div>
   </div>
+
   <div id="sendBar">
     <input id="textbox" placeholder="Type a message…" onkeydown="if(event.key==='Enter') send()" />
     <button id="sendBtn" onclick="send()"><span class="material-symbols-outlined">send</span></button>
   </div>
+
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -311,7 +277,8 @@
     }
     function selectChat(chatId, name){
       if(unsubscribe) unsubscribe(); currentChatId=chatId;
-      document.getElementById('chatHeader').textContent=name;
+      document.getElementById('chatName').textContent=name;
+      document.getElementById('deleteChatBtn').style.display='inline-block';
       const msgs=document.getElementById('messages'); msgs.innerHTML='';
       const ref=db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp');
       unsubscribe=ref.onSnapshot(snap=>{
@@ -340,11 +307,16 @@
       if(chats.docs.some(d=>d.data().members.includes(fid))) return alert('Already chat');
       await db.collection('chats').add({members:[auth.currentUser.uid,fid],timestamp:firebase.firestore.FieldValue.serverTimestamp()});
     };
-    function toggleSidebar(){
-      if(window.innerWidth <= 768){
-        document.getElementById('sidebar').classList.toggle('open');
-      }
-    }
+    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+    document.getElementById('deleteChatBtn').onclick = async () => {
+      if (!currentChatId) return;
+      if (!confirm("Are you sure you want to delete this chat?")) return;
+      await db.collection('chats').doc(currentChatId).delete();
+      currentChatId = null;
+      document.getElementById('chatName').textContent = 'Select a chat';
+      document.getElementById('deleteChatBtn').style.display = 'none';
+      document.getElementById('messages').innerHTML = '';
+    };
   </script>
 </body>
 </html>
