@@ -3,80 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chat</title>
+  <title>Chat & Settings</title>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    /* [same CSS as before, unchanged] */
-    body { background: #fff; margin: 0; padding-bottom: 80px; font-family: sans-serif; }
-    .topnav { position: fixed; top: 0; left: 0; right: 0; height: 50px; background: #42a5f5; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-weight: 600; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); z-index: 1001; }
-    .topnav .user-info { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-    .topnav button { background: #1e88e5; border: none; color: #fff; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
-    .sidebar { position: fixed; top: 50px; bottom: 0; left: 0; width: 200px; background: #1c1c1c; color: #fff; padding: 20px 10px; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); overflow-y: auto; transform: translateX(0); transition: transform 0.3s ease; z-index: 1000; }
-    .sidebar h4 { margin: 0 0 10px; font-size: 18px; }
-    .sidebar-list { list-style: none; padding: 0; margin: 0 0 10px; }
-    .sidebar-list li { padding: 10px; border-radius: 5px; cursor: pointer; margin-bottom: 5px; }
-    .sidebar-list li:hover { background: #333; }
-    .chat-container { margin-left: 220px; margin-top: 70px; padding: 0 20px; }
-    .chat-header { font-size: 18px; margin-bottom: 10px; color: #333; display: flex; align-items: center; gap: 10px; }
-    .chat { display: flex; flex-direction: column; padding: 20px 10px; overflow-y: auto; height: calc(100vh - 180px); }
-    .msg { position: relative; max-width: 75%; padding: 7px 15px; margin-bottom: 2px; word-wrap: break-word; }
-    .msg.sent { margin-left: auto; background: #42a5f5; color: #fff; border-radius: 20px 3px 3px 20px; }
-    .msg.rcvd { margin-right: auto; background: #f1f1f1; color: #555; border-radius: 3px 20px 20px 3px; }
-    .msg::before { content: attr(data-time); font-size: 0.8rem; position: absolute; bottom: 100%; color: #888; white-space: nowrap; display: none; }
-    .msg.sent::before { right: 15px; }
-    .msg.rcvd::before { left: 15px; }
-    .msg:first-child::before, .msg.sent + .msg.rcvd::before, .msg.rcvd + .msg.sent::before { display: block; }
-    #sendBar { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; background: rgba(0, 0, 0, 0.8); padding: 10px; border-radius: 10px; width: 460px; max-width: 90%; z-index: 1002; }
-    #textbox { flex: 1; height: 40px; border: none; border-radius: 20px; padding: 0 15px; font-size: 16px; color: #fff; background: #222; }
-    #textbox:focus { outline: none; background: #333; }
-    #sendBtn { width: 45px; height: 45px; border: none; border-radius: 50%; background: #42a5f5; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; color: #fff; }
-    #sendBtn:hover { background: #1e88e5; }
-    .material-symbols-outlined.menu-toggle { cursor: pointer; font-size: 26px; display: none; }
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .chat-container { margin-left: 0; }
-      .material-symbols-outlined.menu-toggle { display: inline-block; }
-      #sendBar { width: 95%; }
-      .chat { height: calc(100vh - 170px); }
+    body { margin: 0; font-family: sans-serif; background: #f9f9f9; }
+    .topnav {
+      position: fixed; top: 0; left: 0; right: 0; height: 50px;
+      background: #42a5f5; color: #fff; display: flex;
+      align-items: center; justify-content: space-between;
+      padding: 0 20px; font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1001;
+    }
+    .topnav .user-info { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .topnav button { background: #1e88e5; border: none; color: #fff; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-left: 10px; }
+    .container-wrapper { padding-top: 60px; transition: transform .3s ease; }
+    /* Chat */
+    .sidebar {
+      position: fixed; top: 50px; bottom: 0; left: 0; width: 200px;
+      background: #1c1c1c; color: #fff; padding: 20px 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.2); overflow-y: auto;
+    }
+    .sidebar-list { list-style:none; padding:0; margin:0; }
+    .sidebar-list li { padding:10px; border-radius:5px; cursor:pointer; margin-bottom:5px; }
+    .sidebar-list li:hover { background:#333; }
+    .chat-container { margin-left:220px; padding:0 20px; }
+    .chat-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; color:#333; }
+    .chat { display:flex; flex-direction:column; height:calc(100vh - 180px); overflow-y:auto; padding:20px 10px; }
+    .msg { max-width:75%; padding:7px 15px; margin-bottom:2px; position:relative; word-wrap:break-word; }
+    .msg.sent { margin-left:auto; background:#42a5f5; color:#fff; border-radius:20px 3px 3px 20px; }
+    .msg.rcvd { margin-right:auto; background:#f1f1f1; color:#555; border-radius:3px 20px 20px 3px; }
+    .msg::before { content:attr(data-time); font-size:.8rem; position:absolute; bottom:100%; color:#888; white-space:nowrap; display:none; }
+    .msg:first-child::before,
+    .msg.sent + .msg.rcvd::before,
+    .msg.rcvd + .msg.sent::before { display:block; }
+    #sendBar {
+      position:fixed; bottom:10px; left:50%; transform:translateX(-50%);
+      display:flex; gap:10px; background:rgba(0,0,0,0.8);
+      padding:10px; border-radius:10px; width:460px; max-width:90%; z-index:1002;
+    }
+    #textbox { flex:1; height:40px; border:none; border-radius:20px; padding:0 15px; font-size:16px; background:#222; color:#fff; }
+    #sendBtn { width:45px; height:45px; border:none; border-radius:50%; background:#42a5f5; font-size:24px; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    /* Settings */
+    .settings-container {
+      max-width:500px; background:#fff; margin:80px auto; padding:20px;
+      border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);
+      display:flex; flex-direction:column; gap:15px;
+    }
+    #passwordForm { display:none; flex-direction:column; gap:10px; }
+    /* Hidden by default */
+    #settingsView { display:none; }
+    @media (max-width:768px) {
+      .sidebar { transform:translateX(-100%); transition:transform .3s ease; }
+      .sidebar.open { transform:translateX(0); }
+      .chat-container { margin-left:0; }
+      #sendBar { width:95%; }
+      .chat { height:calc(100vh - 170px); }
     }
   </style>
 </head>
 <body>
+
   <div class="topnav">
-    <div style="display:flex;align-items:center;gap:10px;">
+    <div style="display:flex; align-items:center; gap:10px;">
       <span class="material-symbols-outlined menu-toggle" onclick="toggleSidebar()">menu</span>
-      <div class="user-info" id="user-info">Loading user…</div>
+      <div class="user-info" id="user-info">Loading…</div>
     </div>
-    <button id="signoutBtn">Sign Out</button>
-  </div>
-
-  <div class="sidebar" id="sidebar">
-    <h4>chats</h4>
-    <button id="add" title="Add chat" style="height:50px;width:50px;border-radius:100%;background-color:#007AFF;border:transparent;">
-      <h1 style="color:white;line-height:1;margin:0;">+</h1>
-    </button>
-    <ul id="chatsList" class="sidebar-list"></ul>
-  </div>
-
-  <div class="chat-container">
-    <div id="chatHeader" class="chat-header">
-      <span id="chatName">Select a chat</span>
-      <button id="deleteChatBtn" style="display:none; background:#e53935; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Delete</button>
+    <div>
+      <button id="settingsBtn"><span class="material-symbols-outlined">settings</span></button>
+      <button id="signoutBtn">Sign Out</button>
     </div>
-    <div id="messages" class="chat"></div>
   </div>
 
-  <div id="sendBar">
-    <input id="textbox" placeholder="Type a message…" onkeydown="if(event.key==='Enter') send()" />
-    <button id="sendBtn" onclick="send()"><span class="material-symbols-outlined">send</span></button>
+  <!-- Chat View -->
+  <div id="chatView" class="container-wrapper">
+    <div class="sidebar" id="sidebar">
+      <h4>Chats</h4>
+      <button id="add" title="Add chat" style="height:50px;width:50px;border-radius:50%;background:#007AFF;border:none;color:#fff;font-size:24px;">+</button>
+      <ul id="chatsList" class="sidebar-list"></ul>
+    </div>
+    <div class="chat-container">
+      <div class="chat-header">
+        <span id="chatName">Select a chat</span>
+        <button id="deleteChatBtn" style="display:none;background:#e53935;color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">Delete</button>
+      </div>
+      <div id="messages" class="chat"></div>
+    </div>
+    <div id="sendBar">
+      <input id="textbox" placeholder="Type a message…" onkeydown="if(event.key==='Enter') send()" />
+      <button id="sendBtn"><span class="material-symbols-outlined">send</span></button>
+    </div>
+  </div>
+
+  <!-- Settings View -->
+  <div id="settingsView" class="container-wrapper">
+    <div class="settings-container">
+      <button id="backBtn" class="btn btn-light"><span class="material-symbols-outlined">arrow_back</span> Back</button>
+      <button id="signOutBtn2" class="btn btn-secondary">Sign Out</button>
+      <button id="deleteAccountBtn" class="btn btn-danger">Delete Account</button>
+      <button id="showPasswordFormBtn" class="btn btn-warning">Change Password</button>
+      <div id="passwordForm">
+        <input type="password" id="newPassword" placeholder="New Password" class="form-control" />
+        <button id="changePasswordBtn" class="btn btn-primary">Update Password</button>
+      </div>
+    </div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script>
+    // --- Initialize Firebase ---
     const firebaseConfig = {
       apiKey: "AIzaSyAGZwExAE5rfp2_s1zIUdQhmz0ue9-7hk0",
       authDomain: "chat-73434.firebaseapp.com",
@@ -89,59 +126,112 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    let currentChatId = null, unsubscribe = null;
 
-    // Request Notification Permission
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
+    let currentChatId = null, unsubscribe = null, currentChatName = '';
+
+    // Notification setup
+    if (Notification.permission !== "granted") Notification.requestPermission();
     function notifyUser(title, body) {
       if (Notification.permission === "granted") {
-        new Notification(title, {
-          body: body,
-          icon: "https://www.gstatic.com/images/branding/product/1x/contacts_48dp.png"
-        });
+        new Notification(title, { body, icon: "" });
       }
     }
 
+    // UI toggles
+    document.getElementById('settingsBtn').onclick = () => {
+      document.getElementById('chatView').style.display = 'none';
+      document.getElementById('settingsView').style.display = 'block';
+    };
+    document.getElementById('backBtn').onclick = () => {
+      document.getElementById('settingsView').style.display = 'none';
+      document.getElementById('chatView').style.display = 'block';
+    };
+
+    // Auth guard
     auth.onAuthStateChanged(user => {
-      if (!user) return location.href='sign in.html';
+      if (!user) return location.href = 'sign in.html';
       document.getElementById('user-info').textContent = user.email;
-      loadchats();
+      loadChats();
     });
 
+    // Sign out (both views)
     document.getElementById('signoutBtn').onclick = () => auth.signOut();
+    document.getElementById('signOutBtn2').onclick = () => auth.signOut();
 
-    async function loadchats() {
-      db.collection('chats').where('members','array-contains',auth.currentUser.uid)
-        .onSnapshot(async snap=>{
-          const list=document.getElementById('chatsList'); list.innerHTML='';
-          for(const d of snap.docs){
-            const chat=d.data(), other=chat.members.find(u=>u!==auth.currentUser.uid);
-            if(!other) continue;
-            const udoc=await db.collection('users').doc(other).get();
-            const name=udoc.exists?udoc.data().email:'Unknown';
-            const li=document.createElement('li'); li.textContent=name;
-            li.onclick=()=>selectChat(d.id,name);
-            list.appendChild(li);
+    // Delete account
+    document.getElementById('deleteAccountBtn').onclick = async () => {
+      if (!confirm("Delete account permanently?")) return;
+      try {
+        await auth.currentUser.delete();
+        location.href = 'sign in.html';
+      } catch (e) {
+        if (e.code === 'auth/requires-recent-login') {
+          alert("Please sign out and sign back in to confirm.");
+        } else {
+          alert("Error: " + e.message);
+        }
+      }
+    };
+
+    // Change password
+    document.getElementById('showPasswordFormBtn').onclick = () => {
+      const f = document.getElementById('passwordForm');
+      f.style.display = f.style.display === 'flex' ? 'none' : 'flex';
+    };
+    document.getElementById('changePasswordBtn').onclick = async () => {
+      const pw = document.getElementById('newPassword').value.trim();
+      if (!pw) return alert('Enter new password');
+      try {
+        await auth.currentUser.updatePassword(pw);
+        alert('Password updated!');
+        document.getElementById('passwordForm').style.display = 'none';
+        document.getElementById('newPassword').value = '';
+      } catch (e) {
+        if (e.code === 'auth/requires-recent-login') {
+          alert("Please sign out and sign back in to confirm.");
+        } else {
+          alert("Error: " + e.message);
+        }
+      }
+    };
+
+    // Chat functions
+    async function loadChats() {
+      db.collection('chats')
+        .where('members', 'array-contains', auth.currentUser.uid)
+        .onSnapshot(async snap => {
+          const ul = document.getElementById('chatsList'); ul.innerHTML = '';
+          for (let d of snap.docs) {
+            const data = d.data();
+            const other = data.members.find(u => u !== auth.currentUser.uid);
+            if (!other) continue;
+            const udoc = await db.collection('users').doc(other).get();
+            const name = udoc.exists ? udoc.data().email : 'Unknown';
+            let li = document.createElement('li');
+            li.textContent = name;
+            li.onclick = () => openChat(d.id, name);
+            ul.appendChild(li);
           }
         });
     }
 
-    function selectChat(chatId, name){
-      if(unsubscribe) unsubscribe(); currentChatId=chatId;
-      document.getElementById('chatName').textContent=name;
-      document.getElementById('deleteChatBtn').style.display='inline-block';
-      const msgs=document.getElementById('messages'); msgs.innerHTML='';
-      const ref=db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp');
-      unsubscribe=ref.onSnapshot(snap=>{
-        snap.docChanges().forEach(change => {
-          if (change.type === "added") {
-            const d = change.doc.data(), div = document.createElement('div');
+    function openChat(id, name) {
+      if (unsubscribe) unsubscribe();
+      currentChatId = id; currentChatName = name;
+      document.getElementById('chatName').textContent = name;
+      document.getElementById('deleteChatBtn').style.display = 'inline-block';
+      const msgs = document.getElementById('messages');
+      msgs.innerHTML = '';
+      const ref = db.collection('chats').doc(id).collection('messages').orderBy('timestamp');
+      unsubscribe = ref.onSnapshot(snap => {
+        snap.docChanges().forEach(c => {
+          if (c.type === 'added') {
+            const d = c.doc.data();
+            let div = document.createElement('div');
             div.className = d.uid === auth.currentUser.uid ? 'msg sent' : 'msg rcvd';
             div.textContent = d.text;
-            const t = d.timestamp?.toDate?.() || new Date();
-            div.setAttribute('data-time', `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`);
+            const t = d.timestamp?.toDate() || new Date();
+            div.setAttribute('data-time', `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`);
             msgs.appendChild(div);
             if (d.uid !== auth.currentUser.uid) notifyUser(name, d.text);
           }
@@ -150,34 +240,46 @@
       });
     }
 
-    function send(){
-      const txt=document.getElementById('textbox');
-      if(!currentChatId||!txt.value.trim()) return;
-      db.collection('chats').doc(currentChatId)
-        .collection('messages').add({text:txt.value.trim(),uid:auth.currentUser.uid,timestamp:firebase.firestore.FieldValue.serverTimestamp()});
-      txt.value='';
-    }
-
-    document.getElementById('add').onclick=async()=>{
-      const email=prompt('chat email:'); if(!email) return;
-      const us=await db.collection('users').where('email','==',email.trim()).get(); if(us.empty) return alert('No user');
-      const fid=us.docs[0].id;
-      const chats=await db.collection('chats').where('members','array-contains',auth.currentUser.uid).get();
-      if(chats.docs.some(d=>d.data().members.includes(fid))) return alert('Already chat');
-      await db.collection('chats').add({members:[auth.currentUser.uid,fid],timestamp:firebase.firestore.FieldValue.serverTimestamp()});
-    };
-
-    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
-
     document.getElementById('deleteChatBtn').onclick = async () => {
       if (!currentChatId) return;
-      if (!confirm("Are you sure you want to delete this chat?")) return;
+      if (!confirm("Delete this chat?")) return;
       await db.collection('chats').doc(currentChatId).delete();
-      currentChatId = null;
-      document.getElementById('chatName').textContent = 'Select a chat';
       document.getElementById('deleteChatBtn').style.display = 'none';
+      document.getElementById('chatName').textContent = 'Select a chat';
       document.getElementById('messages').innerHTML = '';
+      currentChatId = null;
     };
+
+    document.getElementById('add').onclick = async () => {
+      const email = prompt('Chat with (email):');
+      if (!email) return;
+      const us = await db.collection('users').where('email','==',email.trim()).get();
+      if (us.empty) return alert('No such user');
+      const fid = us.docs[0].id;
+      const chats = await db.collection('chats')
+        .where('members','array-contains', auth.currentUser.uid).get();
+      if (chats.docs.some(d=>d.data().members.includes(fid))) return alert('Already chatting');
+      await db.collection('chats').add({
+        members: [auth.currentUser.uid, fid],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    };
+
+    function send() {
+      const txt = document.getElementById('textbox');
+      if (!currentChatId || !txt.value.trim()) return;
+      db.collection('chats').doc(currentChatId)
+        .collection('messages').add({
+          text: txt.value.trim(),
+          uid: auth.currentUser.uid,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      txt.value = '';
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
   </script>
 </body>
 </html>
