@@ -221,6 +221,7 @@
     <button id="add" title="Add chat" style="height:50px;width:50px;border-radius:100%;background-color:#007AFF;border:transparent;">
       <h1 style="color:white;line-height:1;margin:0;">+</h1>
     </button>
+    <button id="addGroup" title="New group chat" style="height:50px;width:50px;border-radius:50%;background:#66bb6a;border:none;color:#fff;font-size:24px;margin-top:8px;">👥</button>
     <ul id="chatsList" class="sidebar-list"></ul>
   </div>
 
@@ -307,6 +308,32 @@
       if(chats.docs.some(d=>d.data().members.includes(fid))) return alert('Already chat');
       await db.collection('chats').add({members:[auth.currentUser.uid,fid],timestamp:firebase.firestore.FieldValue.serverTimestamp()});
     };
+    document.getElementById('addGroup').onclick = async () => {
+  const groupName = prompt('Group name:');
+  if (!groupName) return;
+
+  const emailsRaw = prompt('Enter emails to add, separated by commas:');
+  if (!emailsRaw) return;
+  const emails = emailsRaw.split(',').map(e => e.trim()).filter(Boolean);
+  if (!emails.length) return alert('Must add at least one member.');
+
+  // Add self
+  const memberEmails = [auth.currentUser.email, ...emails];
+  // Fetch UIDs for all emails
+  const userSnaps = await db.collection('users')
+    .where('email', 'in', memberEmails)
+    .get();
+  const uids = userSnaps.docs.map(d => d.id);
+  if (uids.length !== memberEmails.length) {
+    return alert('One or more users not found.');
+  }
+
+  await db.collection('chats').add({
+    members: uids,
+    groupName,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+};
     function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
     document.getElementById('deleteChatBtn').onclick = async () => {
       if (!currentChatId) return;
