@@ -69,11 +69,11 @@
       padding: 0;
       margin: 10px 0;
     }
+    /* Optional: disable selection/callout if you also want that */
     .sidebar-list li {
-      padding: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 5px;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
     .sidebar-list li:hover {
       background: #333;
@@ -264,49 +264,86 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     let currentChatId = null, unsubscribe = null;
+
     auth.onAuthStateChanged(user => {
-      if (!user) return location.href='sign in.html';
+      if (!user) return location.href = 'sign in.html';
       document.getElementById('user-info').textContent = user.email;
       loadchats();
     });
+
     document.getElementById('signoutBtn').onclick = () => auth.signOut();
+
     async function loadchats() {
-      db.collection('chats').where('members','array-contains',auth.currentUser.uid)
-        .onSnapshot(async snap=>{
-          const list=document.getElementById('chatsList'); list.innerHTML='';
-          for(const d of snap.docs){
-            const chat=d.data(), other=chat.members.find(u=>u!==auth.currentUser.uid);
-            const name=chat.groupName || (await db.collection('users').doc(other).get()).data()?.email || 'Unknown';
-            const li=document.createElement('li'); li.textContent=name;
-            li.onclick=()=>selectChat(d.id,name);
+      db.collection('chats')
+        .where('members', 'array-contains', auth.currentUser.uid)
+        .onSnapshot(async snap => {
+          const list = document.getElementById('chatsList');
+          list.innerHTML = '';
+
+          for (const d of snap.docs) {
+            const chat = d.data();
+            const otherUid = chat.members.find(u => u !== auth.currentUser.uid);
+            const userDoc = await db.collection('users').doc(otherUid).get();
+            const email = userDoc.data()?.email || 'Unknown';
+            const name = chat.groupName || email;
+
+            // Insert zero-width space before "@"
+            const displayName = name.includes('@')
+              ? name.replace('@', '\u200B@')
+              : name;
+
+            const li = document.createElement('li');
+            li.textContent = displayName;
+            li.onclick = () => selectChat(d.id, name);
             list.appendChild(li);
           }
         });
     }
-    function selectChat(chatId, name){
-      if(unsubscribe) unsubscribe(); currentChatId=chatId;
-      document.getElementById('chatName').textContent=name;
-      document.getElementById('deleteChatBtn').style.display='inline-block';
-      const msgs=document.getElementById('messages'); msgs.innerHTML='';
-      const ref=db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp');
-      unsubscribe=ref.onSnapshot(snap=>{
-        msgs.innerHTML=''; snap.forEach(doc=>{
-          const d=doc.data(), div=document.createElement('div');
-          div.className=d.uid===auth.currentUser.uid?'msg sent':'msg rcvd';
-          div.textContent=d.text;
-          const t=d.timestamp?.toDate?.() || new Date();
-          div.setAttribute('data-time',`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`);
-          msgs.appendChild(div);
-        }); msgs.scrollTop=msgs.scrollHeight;
+
+    function selectChat(chatId, name) {
+      if (unsubscribe) unsubscribe();
+      currentChatId = chatId;
+      document.getElementById('chatName').textContent = name;
+      document.getElementById('deleteChatBtn').style.display = 'inline-block';
+
+      const msgsEl = document.getElementById('messages');
+      msgsEl.innerHTML = '';
+
+      const ref = db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp');
+
+      unsubscribe = ref.onSnapshot(snap => {
+        msgsEl.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const div = document.createElement('div');
+          div.className = d.uid === auth.currentUser.uid ? 'msg sent' : 'msg rcvd';
+          div.textContent = d.text;
+          const t = d.timestamp?.toDate?.() || new Date();
+          div.setAttribute('data-time', `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`);
+          msgsEl.appendChild(div);
+        });
+        msgsEl.scrollTop = msgsEl.scrollHeight;
       });
     }
-    function send(){
-      const txt=document.getElementById('textbox');
-      if(!currentChatId||!txt.value.trim()) return;
-      db.collection('chats').doc(currentChatId)
-        .collection('messages').add({text:txt.value.trim(),uid:auth.currentUser.uid,timestamp:firebase.firestore.FieldValue.serverTimestamp()});
-      txt.value='';
+
+    function send() {
+      const txt = document.getElementById('textbox');
+      if (!currentChatId || !txt.value.trim()) return;
+      db.collection('chats')
+        .doc(currentChatId)
+        .collection('messages')
+        .add({
+          text: txt.value.trim(),
+          uid: auth.currentUser.uid,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      txt.value = '';
     }
+
     document.getElementById('addChatOption').onclick = async () => {
       const email = prompt('Chat email:');
       if (!email) return;
@@ -320,27 +357,29 @@
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
     };
+
     document.getElementById('addGroupOption').onclick = async () => {
       const groupName = prompt('Group name:');
       if (!groupName) return;
-
       const emailsRaw = prompt('Enter emails to add, separated by commas:');
       if (!emailsRaw) return;
       const emails = emailsRaw.split(',').map(e => e.trim()).filter(Boolean);
       if (!emails.length) return alert('Must add at least one member.');
-
       const memberEmails = [auth.currentUser.email, ...emails];
       const userSnaps = await db.collection('users').where('email', 'in', memberEmails).get();
       const uids = userSnaps.docs.map(d => d.id);
       if (uids.length !== memberEmails.length) return alert('One or more users not found.');
-
       await db.collection('chats').add({
         members: uids,
         groupName,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
     };
-    function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
     document.getElementById('deleteChatBtn').onclick = async () => {
       if (!currentChatId) return;
       if (!confirm("Are you sure you want to delete this chat?")) return;
